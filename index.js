@@ -1,7 +1,7 @@
-const { token, serverId, restarterRoleId, adminRoleId } = require('./secrets.js');
+import { token, serverId, restarterRoleId, adminRoleId } from './secrets.js';
 
-const Discord = require('discord.js');
-const { exec } = require('child_process');
+import Discord from 'discord.js';
+import { exec } from 'child_process';
 const client = new Discord.Client();
 async function sleep(millis) {
     return new Promise(res => setTimeout(res, millis))
@@ -68,7 +68,7 @@ async function setup() {
         } else {
           stilldoing = true;
           message.channel.send('Starting server...');
-          start();
+          await start();
           message.channel.send('Start command executed!');
           await sleep(20000);
           stilldoing = false;
@@ -80,17 +80,17 @@ async function setup() {
 }
 
 async function start() {
-    running = true;
-    return new Promise(cb => exec('systemctl start minecraft', cb))
+  running = true;
+  return new Promise(cb => exec('systemctl start minecraft', cb))
 }
 
-function stop() {
-    running = false;
-    return new Promise(cb => exec('systemctl stop minecraft', cb));
+async function stop() {
+  running = false;
+  return new Promise(cb => exec('systemctl stop minecraft', cb));
 }
 
 function doesUserHaveAuth(user) {
-    return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
+  return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
 }
 
 setup();
