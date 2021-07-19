@@ -1,4 +1,4 @@
-import { token, speakRoleId, serverId, announcementsChannelId, generalChannelId } from './secrets.js'
+import { token, serverId, restarterRoleId, adminRoleId } from './secrets.js'
 
 import Discord from 'discord.js'
 import { exec } from 'child_process'
@@ -23,11 +23,13 @@ async function setup() {
         let text = message.content.toLowerCase();
         if (text == "bob moss, hit the big red button" || text == "!mcrestart") {
             if (stilldoing == true) { return; }
-            stillrestarting = true;
+            if(!doesUserHaveAuth(message.member)) {return;}
+
+            stilldoing = true;
             running = false;
             message.channel.send('On it, compadre. Im shutting down the reactor core plasma stabalizers now...');
             await stop();
-            message.channel.send('Ive inserted the cyber bomb into the mainframe. We have to wait a bit for the blockchain crypto buildings to collapse...');
+            message.channel.send('Ive inserted the cyber bomb into the mainframe. We have to wait a bit for the blockchain crypto units to collapse...');
             await sleep(15000);
             message.channel.send('Ok, Im rebooting the AI network with our new code overwrite. Great job captain, you truely saved the day.');
             await start();
@@ -36,6 +38,8 @@ async function setup() {
         }
         else if (text == "!mcstop") {
             if(stilldoing == true) {return;}
+            if(!doesUserHaveAuth(message.member)) {return;}
+
             stilldoing = true;
             await stop();
             message.channel.send('Initiated meltdown sequence.');
@@ -44,6 +48,8 @@ async function setup() {
         }
         else if (text == "!mcstart") {
             if(stilldoing == true) {return;}
+            if(!doesUserHaveAuth(message.member)) {return;}
+
             if (running) {
                 message.channel.send("No can completamento compadrino ... youve gotsa to stopsa the server first brah");
             } else {
@@ -63,6 +69,10 @@ async function setup() {
 function stop() {
     running = false;
     return new Promise(cb => exec('systemctl start minecraft', cb));
+}
+
+function doesUserHaveAuth(user) {
+    return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
 }
 
 async function start() {
