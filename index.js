@@ -1,7 +1,7 @@
-const { token, serverId, restarterRoleId, adminRoleId } = require('./secrets.js');
+import { token, serverId, restarterRoleId, adminRoleId } from './secrets.js';
 
-const Discord = require('discord.js');
-const { exec } = require('child_process');
+import Discord from 'discord.js';
+import { exec } from 'child_process';
 const client = new Discord.Client();
 async function sleep(millis) {
     return new Promise(res => setTimeout(res, millis))
@@ -15,7 +15,7 @@ async function setup() {
     client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`);
     });
-
+    
     client.on('message', async message => {
       let text = message.content.toLowerCase();
       if (text == "bob moss, hit the big red button" || text == "!mcrestart") {
@@ -94,4 +94,3 @@ function doesUserHaveAuth(user) {
 }
 
 setup();
-
