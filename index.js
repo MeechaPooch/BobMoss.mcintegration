@@ -66,18 +66,18 @@ async function setup() {
     client.login(token);
 }
 
+async function start() {
+    running = true;
+    return new Promise(cb => exec('systemctl start minecraft', cb))
+}
+
 function stop() {
     running = false;
-    return new Promise(cb => exec('systemctl start minecraft', cb));
+    return new Promise(cb => exec('systemctl stop minecraft', cb));
 }
 
 function doesUserHaveAuth(user) {
     return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
-}
-
-async function start() {
-    running = true;
-    return new Promise(cb => exec('systemctl stop minecraft', cb))
 }
 
 await setup();
