@@ -68,7 +68,7 @@ async function setup() {
         } else {
           stilldoing = true;
           message.channel.send('Starting server...');
-          start();
+          await start();
           message.channel.send('Start command executed!');
           await sleep(20000);
           stilldoing = false;
