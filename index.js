@@ -15,7 +15,7 @@ async function setup() {
     client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`);
     });
-
+    
     client.on('message', async message => {
       let text = message.content.toLowerCase();
       if (text == "bob moss, hit the big red button" || text == "!mcrestart") {
@@ -94,4 +94,3 @@ function doesUserHaveAuth(user) {
 }
 
 setup();
-
