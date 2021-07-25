@@ -3,6 +3,7 @@ import { token, serverId, restarterRoleId, adminRoleId } from './secrets.js';
 import Discord from 'discord.js';
 import { exec } from 'child_process';
 const client = new Discord.Client();
+
 async function sleep(millis) {
     return new Promise(res => setTimeout(res, millis))
 }
@@ -17,7 +18,8 @@ async function setup() {
     });
     
     client.on('message', async message => {
-      let text = message.content.toLowerCase();
+      let args = message.content.split(' ');
+      let text = args.shift().toLowerCase();
       if (text == "bob moss, hit the big red button" || text == "!mcrestart") {
         if (stilldoing == true) {
           message.reply('Still in the process of running another command.');
@@ -31,12 +33,10 @@ async function setup() {
         stilldoing = true;
         running = false;
         message.channel.send('On it, compadre. Im shutting down the reactor core plasma stabalizers now...');
-        await stop();
+        await restart();
         message.channel.send('Ive inserted the cyber bomb into the mainframe. We have to wait a bit for the blockchain crypto units to collapse...');
         await sleep(15000);
         message.channel.send('Ok, Im rebooting the AI network with our new code overwrite. Great job captain, you truely saved the day.');
-        await start();
-        await sleep(20000);
         stilldoing = false;
       } else if (text == "!mcstop") {
         if(stilldoing == true) {
@@ -73,24 +73,35 @@ async function setup() {
           await sleep(20000);
           stilldoing = false;
         }
+      } else if (text === "!mcisup") {
+        await message.channel.send(running ? 'The server is up!' : 'The server is not up.');
+      } else if (text === "!mcsetup") {
+        running = args[0].toLowerCase() === 'true';
+        await message.channel.send(`You have set the server to ${running ? 'up' : 'down'}.`);
       }
-
     });
     client.login(token);
 }
 
-async function start() {
-    running = true;
-    return new Promise(cb => exec('systemctl start minecraft', cb))
+const start = async () => {
+  running = true;
+  await exec('monit start minecraft');
+  return new Promise(cb => exec('systemctl start minecraft', cb));
 }
 
-function stop() {
-    running = false;
-    return new Promise(cb => exec('systemctl stop minecraft', cb));
+const stop = async () => {
+  running = false;
+  return new Promise(cb => exec('monit stop minecraft', cb));
+}
+
+const restart = async () => {
+  running = false;
+  await stop();
+  return start();
 }
 
 function doesUserHaveAuth(user) {
-    return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
+  return user.roles.cache.find(r => r.id == adminRoleId || r.id == restarterRoleId);
 }
 
 setup();
